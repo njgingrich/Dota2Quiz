@@ -26,4 +26,17 @@ public class Answer {
         this.text = text;
         this.image = image;
     }
+
+    public String getText() {
+        return text;
+    }
+
+    public boolean isCorrect() {
+        return correct;
+    }
+
+    @Override
+    public String toString() {
+        return text;
+    }
 }
