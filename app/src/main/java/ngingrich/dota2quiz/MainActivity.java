@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button b = (Button) v;
-                Log.i(TAG, "Clicked button" + b.getText());
                 if (b.getText() == currentQuestion.getCorrectAnswer().getText()) {
                     score += CORRECT_ANSWER_POINTS;
                     updateScore();
