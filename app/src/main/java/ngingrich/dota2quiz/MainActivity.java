@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import ngingrich.dota2quiz.generate.AbilityQuiz;
 import ngingrich.dota2quiz.model.abilities.Abilities;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int CORRECT_ANSWER_POINTS = 10;
     private static final int WRONG_ANSWER_POINTS   = 0;
     private int score = 0;
+    List<Question> questionList;
+    ListIterator<Question> listItr;
     private TextView questionText;
     private TextView scoreText;
     private Button buttonA;
@@ -56,13 +59,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.e(TAG, "Failed to parse JSON: " + e);
         }
-        List<Question> questionList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        questionList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
             questionList.add(AbilityQuiz.generateTestQuestion());
         }
+        listItr = questionList.listIterator();
 
         initializeComponents();
-        insertQuestion(questionList);
+        nextQuestion();
 
         /*
         Register on-click listeners
@@ -91,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
         buttonB.setText(answers.get(1).toString());
         buttonC.setText(answers.get(2).toString());
         buttonD.setText(answers.get(3).toString());
+    }
+
+    private void nextQuestion() {
+        if (listItr.hasNext()) {
+            currentQuestion = listItr.next();
+        }
+        insertQuestion(questionList);
     }
 
     private void updateScore() {
@@ -128,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 if (b.getText() == currentQuestion.getCorrectAnswer().getText()) {
                     score += CORRECT_ANSWER_POINTS;
                     updateScore();
+                    nextQuestion();
                 }
             }
         };

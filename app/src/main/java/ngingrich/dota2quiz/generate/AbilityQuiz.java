@@ -26,9 +26,17 @@ public class AbilityQuiz {
     }
 
     public Question generateQuestion() {
-        return generateTestQuestion();
-        //return generateManaCostQuestion();
-        //return generateCooldownQuestion();
+        Random rand = new Random();
+        switch (rand.nextInt(3)) {
+            case 0:
+                return generateTestQuestion();
+            case 1:
+                return generateManaCostQuestion();
+            case 2:
+                return generateCooldownQuestion();
+            default:
+                throw new UnsupportedOperationException("Invalid option");
+        }
     }
 
     public static Question generateTestQuestion() {
