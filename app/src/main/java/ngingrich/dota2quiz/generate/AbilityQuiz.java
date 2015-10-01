@@ -1,6 +1,7 @@
 package ngingrich.dota2quiz.generate;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import ngingrich.dota2quiz.model.quiz.QuestionType;
  * Created by nathan on 8/2/15.
  */
 public class AbilityQuiz {
+    private static final String TAG = AbilityQuiz.class.getSimpleName();
     Abilities abilities;
 
     public AbilityQuiz(Abilities abilities) {
@@ -60,6 +62,7 @@ public class AbilityQuiz {
 
         // Get the level of the ability (randomly)
         String[] costs = getCooldownsOfAbility(datum);
+        Log.i(TAG, "costs: " + costs[0]);
         int level = new Random().nextInt(costs.length + 1);
 
         // Create the question
@@ -88,6 +91,7 @@ public class AbilityQuiz {
 
         // Get the level of the ability (randomly)
         String[] costs = getManacostsOfAbility(datum);
+        Log.i(TAG, "costs: " + costs[0]);
         int level = new Random().nextInt(costs.length + 1);
 
         // Create the question
@@ -114,7 +118,7 @@ public class AbilityQuiz {
         if (cmb.getType().equals("cooldown")) {
             cmb = datum.getCmb().get(1);
         }
-        return cmb.getType().split("/");
+        return cmb.getValue().split("/");
     }
 
     private String[] getCooldownsOfAbility(AbilityDatum datum) {
@@ -122,7 +126,7 @@ public class AbilityQuiz {
         if (cmb.getType().equals("cooldown")) {
             cmb = datum.getCmb().get(1);
         }
-        return cmb.getType().split("/");
+        return cmb.getValue().split("/");
     }
 
     private AbilityDatum getAbilityDatum() {

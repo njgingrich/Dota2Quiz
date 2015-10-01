@@ -56,15 +56,17 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, abilities.toString());
             Log.i(TAG, heroes.toString());
             Log.i(TAG, items.toString());
+
+            AbilityQuiz quiz = new AbilityQuiz(abilities);
+            questionList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                questionList.add(quiz.generateQuestion());
+            }
         } catch (IOException e) {
             Log.e(TAG, "Failed to parse JSON: " + e);
         }
-        questionList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            questionList.add(AbilityQuiz.generateTestQuestion());
-        }
-        listItr = questionList.listIterator();
 
+        listItr = questionList.listIterator();
         initializeComponents();
         nextQuestion();
 
@@ -86,9 +88,8 @@ public class MainActivity extends AppCompatActivity {
         buttonD = (Button) findViewById(R.id.buttonD);
     }
 
-    private void insertQuestion(List<Question> questionList) {
-        currentQuestion = questionList.get(0);
-        ArrayList<Answer> answers = new ArrayList<>(currentQuestion.getAnswers());
+    private void insertQuestion(List<Answer> answers) {
+        Log.i(TAG, "Inserting question with answers " + answers.toString());
         questionText.setText(currentQuestion.getQuestion());
         updateScore();
         buttonA.setText(answers.get(0).toString());
@@ -98,10 +99,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void nextQuestion() {
+        Log.i(TAG, "Moving to question " + listItr.previousIndex());
         if (listItr.hasNext()) {
             currentQuestion = listItr.next();
+            Log.i(TAG, "Current question: " + currentQuestion.toString());
         }
-        insertQuestion(questionList);
+        insertQuestion(new ArrayList<>(currentQuestion.getAnswers()));
     }
 
     private void updateScore() {
