@@ -32,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int CORRECT_ANSWER_POINTS = 10;
     private static final int WRONG_ANSWER_POINTS   = 0;
     private int score = 0;
-    List<Question> questionList;
-    ListIterator<Question> listItr;
+    private AbilityQuiz quiz;
+    private List<Question> questionList;
+    private ListIterator<Question> listItr;
     private TextView questionText;
     private TextView scoreText;
     private Button buttonA;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             Abilities abilities = gson.fromJson(getJsonReader("abilities.json"), Abilities.class);
             Heroes heroes = gson.fromJson(getJsonReader("herodata.json"), Heroes.class);
             Items items = gson.fromJson(getJsonReader("items.json"), Items.class);
+            quiz = new AbilityQuiz(abilities);
             Log.i(TAG, abilities.toString());
             Log.i(TAG, heroes.toString());
             Log.i(TAG, items.toString());
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         }
         questionList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            questionList.add(AbilityQuiz.generateTestQuestion());
+            questionList.add(quiz.generateQuestion());
         }
         listItr = questionList.listIterator();
 

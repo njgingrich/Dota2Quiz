@@ -114,7 +114,7 @@ public class AbilityQuiz {
         if (cmb.getType().equals("cooldown")) {
             cmb = datum.getCmb().get(1);
         }
-        return cmb.getType().split("/");
+        return cmb.getValue().split("/");
     }
 
     private String[] getCooldownsOfAbility(AbilityDatum datum) {
@@ -122,7 +122,7 @@ public class AbilityQuiz {
         if (cmb.getType().equals("cooldown")) {
             cmb = datum.getCmb().get(1);
         }
-        return cmb.getType().split("/");
+        return cmb.getValue().split("/");
     }
 
     private AbilityDatum getAbilityDatum() {
