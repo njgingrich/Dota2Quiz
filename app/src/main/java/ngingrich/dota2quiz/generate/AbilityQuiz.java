@@ -29,7 +29,7 @@ public class AbilityQuiz {
 
     public Question generateQuestion() {
         Random rand = new Random();
-        switch (rand.nextInt(3)) {
+        switch (/*rand.nextInt(3)*/1) {
             case 0:
                 return generateTestQuestion();
             case 1:
@@ -57,8 +57,8 @@ public class AbilityQuiz {
      * @return A question with 4 responses
      */
     private Question generateCooldownQuestion() {
-        // Get a valid ability with a manacost
-        AbilityDatum datum = getAbilityDatum();
+        // Get a valid ability with a cooldown
+        AbilityDatum datum = getAbilityDatumWithCooldown();
 
         // Get the level of the ability (randomly)
         String[] costs = getCooldownsOfAbility(datum);
@@ -87,12 +87,13 @@ public class AbilityQuiz {
      */
     private Question generateManaCostQuestion() {
         // Get a valid ability with a manacost
-        AbilityDatum datum = getAbilityDatum();
+        AbilityDatum datum = getAbilityDatumWithManacost();
 
         // Get the level of the ability (randomly)
         String[] costs = getManacostsOfAbility(datum);
         Log.i(TAG, "costs: " + costs[0]);
-        int level = new Random().nextInt(costs.length + 1);
+        int level = new Random().nextInt(costs.length) + 1;
+        Log.i(TAG, "randomly chose " + level + " from " + costs.length);
 
         // Create the question
         Question q = new Question("What is the mana cost of Level " + level + " " + datum.getDname(),
@@ -115,13 +116,14 @@ public class AbilityQuiz {
 
     private String[] getManacostsOfAbility(AbilityDatum datum) {
         Cmb cmb = datum.getCmb().get(0);
-        if (cmb.getType().equals("cooldown")) {
+        if (cmb.getType().equals("cooldown")) { // then get the other one
             cmb = datum.getCmb().get(1);
+            Log.i(TAG, "Returning manacosts for cmb: " + cmb);
         }
         return cmb.getValue().split("/");
     }
 
-    private String[] getCooldownsOfAbility(AbilityDatum datum) {
+    public String[] getCooldownsOfAbility(AbilityDatum datum) {
         Cmb cmb = datum.getCmb().get(0);
         if (cmb.getType().equals("cooldown")) {
             cmb = datum.getCmb().get(1);
@@ -130,10 +132,52 @@ public class AbilityQuiz {
     }
 
     private AbilityDatum getAbilityDatum() {
-        AbilityDatum datum = abilities.getRandomDatum();
-        while (datum.getCmb().size() == 0) {
-            // Get a new datum if the ability doesn't have a manacost (passives)
-            datum = abilities.getRandomDatum();
+        return abilities.getRandomDatum();
+    }
+
+    private AbilityDatum getAbilityDatumWithManacost() {
+        AbilityDatum datum = getAbilityDatum();
+        boolean isValid = false;
+
+        int i = 50;
+        while (!isValid && i > 0) {
+            // if size is 0, start over
+            // if get(0) is "cooldown", check if get(1) != null
+                // if get(1) is not null, get(1) must be manacost
+
+            if (datum.getCmb().size() == 0) {
+                Log.i(TAG, "size was 0, trying again");
+                datum = getAbilityDatum();
+            } else {
+                List<Cmb> cmbList = datum.getCmb();
+                Log.i(TAG, "found cmb list:");
+                for (Cmb cmb : cmbList) {
+                    Log.i(TAG, cmb.toString());
+                }
+                if (cmbList.get(0).getType().equals("cooldown")) {
+                    if (cmbList.get(1) == null) {
+                        datum = getAbilityDatum();
+                    } else {
+                        isValid = true;
+                    }
+                } else {
+                    isValid = true;
+                }
+            }
+            i--;
+        }
+        return datum;
+    }
+
+    private AbilityDatum getAbilityDatumWithCooldown() {
+        AbilityDatum datum = getAbilityDatum();
+        while (datum.getCmb() == null || datum.getCmb().size() == 0) {
+            // Get a new datum if the ability doesn't have a cooldown (passives)
+            datum = getAbilityDatum();
+            if (datum.getCmb().get(0).getType().equals("cooldown") ||
+                    (datum.getCmb().size() == 2 && datum.getCmb().get(1).getType().equals("cooldown"))) {
+                break;
+            }
         }
         return datum;
     }
@@ -141,16 +185,10 @@ public class AbilityQuiz {
     private List<Integer> getGeneratedAnswers(int cost) {
         int AMOUNT_TO_GENERATE = 3;
         List<Integer> costs = new ArrayList<>();
-        int costsLength = costs.size();
 
-        for (int i = 1; i <= costsLength; i++) {
-            // Positives first
-            if (i <= 5) {
-                costs.add(cost + (5 * i));
-                // Negatives after
-            } else {
-                costs.add(cost - (5 * i));
-            }
+        for (int i = 1; i <= 5; i++) {
+            costs.add(cost + (5 * i));
+            costs.add(cost - (5 * i));
         }
         Random r = new Random();
         Collections.shuffle(costs);

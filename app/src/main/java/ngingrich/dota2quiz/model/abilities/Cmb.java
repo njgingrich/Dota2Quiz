@@ -48,4 +48,8 @@ public class Cmb {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return type + ": " + value;
+    }
 }

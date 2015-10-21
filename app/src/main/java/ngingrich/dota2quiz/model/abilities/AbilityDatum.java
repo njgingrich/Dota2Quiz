@@ -28,7 +28,7 @@ public class AbilityDatum {
     @Expose
     private String dname;
     @Expose
-    private List<Affect> affects = new ArrayList<Affect>();
+    private List<Affect> affects = new ArrayList<>();
     @Expose
     private String desc;
     @Expose
@@ -36,9 +36,9 @@ public class AbilityDatum {
     @Expose
     private String dmg;
     @Expose
-    private List<String> attrib = new ArrayList<String>();
+    private List<String> attrib = new ArrayList<>();
     @Expose
-    private List<Cmb> cmb = new ArrayList<Cmb>();
+    private List<Cmb> cmb = new ArrayList<>();
     @Expose
     private String lore;
     @Expose

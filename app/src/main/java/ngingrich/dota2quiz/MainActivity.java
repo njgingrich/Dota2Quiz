@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
             AbilityQuiz quiz = new AbilityQuiz(abilities);
             questionList = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 1; i++) {
                 questionList.add(quiz.generateQuestion());
             }
         } catch (IOException e) {
