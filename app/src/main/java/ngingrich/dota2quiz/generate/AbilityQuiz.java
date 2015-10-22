@@ -68,7 +68,7 @@ public class AbilityQuiz {
         // Create the question
         Question q = new Question("What is the cooldown of Level " + level + " " + datum.getDname() + "?",
                 Difficulty.MEDIUM, QuestionType.A_COOLDOWN);
-        List<Integer> generatedAnswers = getGeneratedAnswers(Integer.parseInt(costs[level-1]));
+        List<Double> generatedAnswers = getGeneratedAnswers(Double.parseDouble(costs[level-1]));
 
         q.addAnswer(new Answer(true, costs[level-1]));
         q.addAnswer(new Answer(generatedAnswers.get(0).toString()));
@@ -104,7 +104,7 @@ public class AbilityQuiz {
          * To do this, generate +5,+10,+15,+20,+25 and the converse,
          * then we'll select 3 of them
         */
-        List<Integer> generatedAnswers = getGeneratedAnswers(Integer.parseInt(costs[level-1]));
+        List<Double> generatedAnswers = getGeneratedAnswers(Double.parseDouble(costs[level-1]));
 
         q.addAnswer(new Answer(true, costs[level-1]));
         q.addAnswer(new Answer(generatedAnswers.get(0).toString()));
@@ -193,9 +193,9 @@ public class AbilityQuiz {
         return datum;
     }
 
-    private List<Integer> getGeneratedAnswers(int cost) {
+    private List<Double> getGeneratedAnswers(double cost) {
         int AMOUNT_TO_GENERATE = 3;
-        List<Integer> costs = new ArrayList<>();
+        List<Double> costs = new ArrayList<>();
 
         for (int i = 1; i <= 5; i++) {
             costs.add(cost + (5 * i));
