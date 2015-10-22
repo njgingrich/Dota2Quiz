@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int CORRECT_ANSWER_POINTS = 10;
     private static final int WRONG_ANSWER_POINTS   = 0;
+    private List<Integer> rand_array = new ArrayList<>(Arrays.asList(0,1,2,3));
     private int score = 0;
     List<Question> questionList;
     ListIterator<Question> listItr;
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
             AbilityQuiz quiz = new AbilityQuiz(abilities);
             questionList = new ArrayList<>();
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 20; i++) {
                 questionList.add(quiz.generateQuestion());
             }
         } catch (IOException e) {
@@ -92,10 +95,11 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "Inserting question with answers " + answers.toString());
         questionText.setText(currentQuestion.getQuestion());
         updateScore();
-        buttonA.setText(answers.get(0).toString());
-        buttonB.setText(answers.get(1).toString());
-        buttonC.setText(answers.get(2).toString());
-        buttonD.setText(answers.get(3).toString());
+        Collections.shuffle(rand_array);
+        buttonA.setText(answers.get(rand_array.get(0)).toString());
+        buttonB.setText(answers.get(rand_array.get(1)).toString());
+        buttonC.setText(answers.get(rand_array.get(2)).toString());
+        buttonD.setText(answers.get(rand_array.get(3)).toString());
     }
 
     private void nextQuestion() {

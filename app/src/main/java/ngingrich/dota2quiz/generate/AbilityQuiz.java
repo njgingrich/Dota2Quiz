@@ -29,7 +29,7 @@ public class AbilityQuiz {
 
     public Question generateQuestion() {
         Random rand = new Random();
-        switch (/*rand.nextInt(3)*/1) {
+        switch (rand.nextInt(3)) {
             case 0:
                 return generateTestQuestion();
             case 1:
@@ -63,10 +63,10 @@ public class AbilityQuiz {
         // Get the level of the ability (randomly)
         String[] costs = getCooldownsOfAbility(datum);
         Log.i(TAG, "costs: " + costs[0]);
-        int level = new Random().nextInt(costs.length + 1);
+        int level = new Random().nextInt(costs.length) + 1;
 
         // Create the question
-        Question q = new Question("What is the cooldown of Level " + level + " " + datum.getDname(),
+        Question q = new Question("What is the cooldown of Level " + level + " " + datum.getDname() + "?",
                 Difficulty.MEDIUM, QuestionType.A_COOLDOWN);
         List<Integer> generatedAnswers = getGeneratedAnswers(Integer.parseInt(costs[level-1]));
 
@@ -96,7 +96,7 @@ public class AbilityQuiz {
         Log.i(TAG, "randomly chose " + level + " from " + costs.length);
 
         // Create the question
-        Question q = new Question("What is the mana cost of Level " + level + " " + datum.getDname(),
+        Question q = new Question("What is the mana cost of Level " + level + " " + datum.getDname() + "?",
                 Difficulty.MEDIUM, QuestionType.A_MANA_COST);
 
         /*
@@ -125,7 +125,7 @@ public class AbilityQuiz {
 
     public String[] getCooldownsOfAbility(AbilityDatum datum) {
         Cmb cmb = datum.getCmb().get(0);
-        if (cmb.getType().equals("cooldown")) {
+        if (cmb.getType().equals("manacost")) {
             cmb = datum.getCmb().get(1);
         }
         return cmb.getValue().split("/");
@@ -137,17 +137,14 @@ public class AbilityQuiz {
 
     private AbilityDatum getAbilityDatumWithManacost() {
         AbilityDatum datum = getAbilityDatum();
-        boolean isValid = false;
 
-        int i = 50;
-        while (!isValid && i > 0) {
+        while (true) {
             // if size is 0, start over
             // if get(0) is "cooldown", check if get(1) != null
                 // if get(1) is not null, get(1) must be manacost
 
             if (datum.getCmb().size() == 0) {
                 Log.i(TAG, "size was 0, trying again");
-                datum = getAbilityDatum();
             } else {
                 List<Cmb> cmbList = datum.getCmb();
                 Log.i(TAG, "found cmb list:");
@@ -155,29 +152,43 @@ public class AbilityQuiz {
                     Log.i(TAG, cmb.toString());
                 }
                 if (cmbList.get(0).getType().equals("cooldown")) {
-                    if (cmbList.get(1) == null) {
-                        datum = getAbilityDatum();
-                    } else {
-                        isValid = true;
+                    if (cmbList.get(1) != null) {
+                        break;
                     }
                 } else {
-                    isValid = true;
+                    break;
                 }
             }
-            i--;
+            datum = getAbilityDatum();
         }
         return datum;
     }
 
     private AbilityDatum getAbilityDatumWithCooldown() {
         AbilityDatum datum = getAbilityDatum();
-        while (datum.getCmb() == null || datum.getCmb().size() == 0) {
-            // Get a new datum if the ability doesn't have a cooldown (passives)
-            datum = getAbilityDatum();
-            if (datum.getCmb().get(0).getType().equals("cooldown") ||
-                    (datum.getCmb().size() == 2 && datum.getCmb().get(1).getType().equals("cooldown"))) {
-                break;
+
+        while (true) {
+            // if size is 0, start over
+            // if get(0) is "manacost", check if get(1) != null
+            // if get(1) is not null, get(1) must be cooldown
+
+            if (datum.getCmb().size() == 0) {
+                Log.i(TAG, "size was 0, trying again");
+            } else {
+                List<Cmb> cmbList = datum.getCmb();
+                Log.i(TAG, "found cmb list:");
+                for (Cmb cmb : cmbList) {
+                    Log.i(TAG, cmb.toString());
+                }
+                if (cmbList.get(0).getType().equals("manacost")) {
+                    if (cmbList.get(1) != null) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
             }
+            datum = getAbilityDatum();
         }
         return datum;
     }
