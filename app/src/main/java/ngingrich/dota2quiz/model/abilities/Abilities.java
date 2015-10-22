@@ -13,6 +13,7 @@ public class Abilities {
 
     @Expose
     private List<AbilityDatum> abilitydata = new ArrayList<>();
+
     private Random rand = new Random();
 
     /**

@@ -46,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonD;
 
     private Question currentQuestion;
+    private Abilities abilities;
+    private Heroes heroes;
+    private Items items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         try {
-            Abilities abilities = gson.fromJson(getJsonReader("abilities.json"), Abilities.class);
-            Heroes heroes = gson.fromJson(getJsonReader("herodata.json"), Heroes.class);
-            Items items = gson.fromJson(getJsonReader("items.json"), Items.class);
+            abilities = gson.fromJson(getJsonReader("abilities.json"), Abilities.class);
+            heroes = gson.fromJson(getJsonReader("herodata.json"), Heroes.class);
+            items = gson.fromJson(getJsonReader("items.json"), Items.class);
             quiz = new AbilityQuiz(abilities);
             Log.i(TAG, abilities.toString());
             Log.i(TAG, heroes.toString());
