@@ -12,7 +12,8 @@ import java.util.Random;
 public class Abilities {
 
     @Expose
-    private List<AbilityDatum> abilitydata = new ArrayList<AbilityDatum>();
+    private List<AbilityDatum> abilitydata = new ArrayList<>();
+    private Random rand = new Random();
 
     /**
      *
@@ -40,7 +41,6 @@ public class Abilities {
     }
 
     public AbilityDatum getRandomDatum() {
-        Random r = new Random();
-        return abilitydata.get(r.nextInt(abilitydata.size()));
+        return abilitydata.get(rand.nextInt(abilitydata.size()));
     }
 }

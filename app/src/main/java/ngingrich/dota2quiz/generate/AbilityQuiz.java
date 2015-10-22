@@ -1,6 +1,7 @@
 package ngingrich.dota2quiz.generate;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import ngingrich.dota2quiz.model.quiz.QuestionType;
  * Created by nathan on 8/2/15.
  */
 public class AbilityQuiz {
+    private static final String TAG = AbilityQuiz.class.getSimpleName();
     Abilities abilities;
 
     public AbilityQuiz(Abilities abilities) {
@@ -55,15 +57,16 @@ public class AbilityQuiz {
      * @return A question with 4 responses
      */
     private Question generateCooldownQuestion() {
-        // Get a valid ability with a manacost
-        AbilityDatum datum = getAbilityDatum();
+        // Get a valid ability with a cooldown
+        AbilityDatum datum = getAbilityDatumWithCooldown();
 
         // Get the level of the ability (randomly)
         String[] costs = getCooldownsOfAbility(datum);
-        int level = new Random().nextInt(costs.length + 1);
+        Log.i(TAG, "costs: " + costs[0]);
+        int level = new Random().nextInt(costs.length) + 1;
 
         // Create the question
-        Question q = new Question("What is the cooldown of Level " + level + " " + datum.getDname(),
+        Question q = new Question("What is the cooldown of Level " + level + " " + datum.getDname() + "?",
                 Difficulty.MEDIUM, QuestionType.A_COOLDOWN);
         List<Integer> generatedAnswers = getGeneratedAnswers(Integer.parseInt(costs[level-1]));
 
@@ -84,14 +87,16 @@ public class AbilityQuiz {
      */
     private Question generateManaCostQuestion() {
         // Get a valid ability with a manacost
-        AbilityDatum datum = getAbilityDatum();
+        AbilityDatum datum = getAbilityDatumWithManacost();
 
         // Get the level of the ability (randomly)
         String[] costs = getManacostsOfAbility(datum);
-        int level = new Random().nextInt(costs.length + 1);
+        Log.i(TAG, "costs: " + costs[0]);
+        int level = new Random().nextInt(costs.length) + 1;
+        Log.i(TAG, "randomly chose " + level + " from " + costs.length);
 
         // Create the question
-        Question q = new Question("What is the mana cost of Level " + level + " " + datum.getDname(),
+        Question q = new Question("What is the mana cost of Level " + level + " " + datum.getDname() + "?",
                 Difficulty.MEDIUM, QuestionType.A_MANA_COST);
 
         /*
@@ -111,25 +116,79 @@ public class AbilityQuiz {
 
     private String[] getManacostsOfAbility(AbilityDatum datum) {
         Cmb cmb = datum.getCmb().get(0);
-        if (cmb.getType().equals("cooldown")) {
+        if (cmb.getType().equals("cooldown")) { // then get the other one
             cmb = datum.getCmb().get(1);
+            Log.i(TAG, "Returning manacosts for cmb: " + cmb);
         }
         return cmb.getValue().split("/");
     }
 
-    private String[] getCooldownsOfAbility(AbilityDatum datum) {
+    public String[] getCooldownsOfAbility(AbilityDatum datum) {
         Cmb cmb = datum.getCmb().get(0);
-        if (cmb.getType().equals("cooldown")) {
+        if (cmb.getType().equals("manacost")) {
             cmb = datum.getCmb().get(1);
         }
         return cmb.getValue().split("/");
     }
 
     private AbilityDatum getAbilityDatum() {
-        AbilityDatum datum = abilities.getRandomDatum();
-        while (datum.getCmb().size() == 0) {
-            // Get a new datum if the ability doesn't have a manacost (passives)
-            datum = abilities.getRandomDatum();
+        return abilities.getRandomDatum();
+    }
+
+    private AbilityDatum getAbilityDatumWithManacost() {
+        AbilityDatum datum = getAbilityDatum();
+
+        while (true) {
+            // if size is 0, start over
+            // if get(0) is "cooldown", check if get(1) != null
+                // if get(1) is not null, get(1) must be manacost
+
+            if (datum.getCmb().size() == 0) {
+                Log.i(TAG, "size was 0, trying again");
+            } else {
+                List<Cmb> cmbList = datum.getCmb();
+                Log.i(TAG, "found cmb list:");
+                for (Cmb cmb : cmbList) {
+                    Log.i(TAG, cmb.toString());
+                }
+                if (cmbList.get(0).getType().equals("cooldown")) {
+                    if (cmbList.get(1) != null) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+            datum = getAbilityDatum();
+        }
+        return datum;
+    }
+
+    private AbilityDatum getAbilityDatumWithCooldown() {
+        AbilityDatum datum = getAbilityDatum();
+
+        while (true) {
+            // if size is 0, start over
+            // if get(0) is "manacost", check if get(1) != null
+            // if get(1) is not null, get(1) must be cooldown
+
+            if (datum.getCmb().size() == 0) {
+                Log.i(TAG, "size was 0, trying again");
+            } else {
+                List<Cmb> cmbList = datum.getCmb();
+                Log.i(TAG, "found cmb list:");
+                for (Cmb cmb : cmbList) {
+                    Log.i(TAG, cmb.toString());
+                }
+                if (cmbList.get(0).getType().equals("manacost")) {
+                    if (cmbList.get(1) != null) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+            datum = getAbilityDatum();
         }
         return datum;
     }
@@ -137,16 +196,10 @@ public class AbilityQuiz {
     private List<Integer> getGeneratedAnswers(int cost) {
         int AMOUNT_TO_GENERATE = 3;
         List<Integer> costs = new ArrayList<>();
-        int costsLength = costs.size();
 
-        for (int i = 1; i <= costsLength; i++) {
-            // Positives first
-            if (i <= 5) {
-                costs.add(cost + (5 * i));
-                // Negatives after
-            } else {
-                costs.add(cost - (5 * i));
-            }
+        for (int i = 1; i <= 5; i++) {
+            costs.add(cost + (5 * i));
+            costs.add(cost - (5 * i));
         }
         Random r = new Random();
         Collections.shuffle(costs);

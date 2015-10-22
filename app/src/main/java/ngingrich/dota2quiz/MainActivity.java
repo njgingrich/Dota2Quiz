@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int CORRECT_ANSWER_POINTS = 10;
     private static final int WRONG_ANSWER_POINTS   = 0;
+    private List<Integer> rand_array = new ArrayList<>(Arrays.asList(0,1,2,3));
     private int score = 0;
     private AbilityQuiz quiz;
     private List<Question> questionList;
@@ -58,15 +61,25 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, abilities.toString());
             Log.i(TAG, heroes.toString());
             Log.i(TAG, items.toString());
+
+            AbilityQuiz quiz = new AbilityQuiz(abilities);
+            questionList = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                questionList.add(quiz.generateQuestion());
+            }
         } catch (IOException e) {
             Log.e(TAG, "Failed to parse JSON: " + e);
         }
+<<<<<<< HEAD
         questionList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             questionList.add(quiz.generateQuestion());
         }
         listItr = questionList.listIterator();
+=======
+>>>>>>> question-list
 
+        listItr = questionList.listIterator();
         initializeComponents();
         nextQuestion();
 
@@ -88,22 +101,24 @@ public class MainActivity extends AppCompatActivity {
         buttonD = (Button) findViewById(R.id.buttonD);
     }
 
-    private void insertQuestion(List<Question> questionList) {
-        currentQuestion = questionList.get(0);
-        ArrayList<Answer> answers = new ArrayList<>(currentQuestion.getAnswers());
+    private void insertQuestion(List<Answer> answers) {
+        Log.i(TAG, "Inserting question with answers " + answers.toString());
         questionText.setText(currentQuestion.getQuestion());
         updateScore();
-        buttonA.setText(answers.get(0).toString());
-        buttonB.setText(answers.get(1).toString());
-        buttonC.setText(answers.get(2).toString());
-        buttonD.setText(answers.get(3).toString());
+        Collections.shuffle(rand_array);
+        buttonA.setText(answers.get(rand_array.get(0)).toString());
+        buttonB.setText(answers.get(rand_array.get(1)).toString());
+        buttonC.setText(answers.get(rand_array.get(2)).toString());
+        buttonD.setText(answers.get(rand_array.get(3)).toString());
     }
 
     private void nextQuestion() {
+        Log.i(TAG, "Moving to question " + listItr.previousIndex());
         if (listItr.hasNext()) {
             currentQuestion = listItr.next();
+            Log.i(TAG, "Current question: " + currentQuestion.toString());
         }
-        insertQuestion(questionList);
+        insertQuestion(new ArrayList<>(currentQuestion.getAnswers()));
     }
 
     private void updateScore() {
