@@ -70,15 +70,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.e(TAG, "Failed to parse JSON: " + e);
         }
-<<<<<<< HEAD
         questionList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             questionList.add(quiz.generateQuestion());
         }
-        listItr = questionList.listIterator();
-=======
->>>>>>> question-list
-
         listItr = questionList.listIterator();
         initializeComponents();
         nextQuestion();

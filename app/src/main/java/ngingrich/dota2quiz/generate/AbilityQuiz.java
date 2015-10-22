@@ -152,10 +152,10 @@ public class AbilityQuiz {
                     Log.i(TAG, cmb.toString());
                 }
                 if (cmbList.get(0).getType().equals("cooldown")) {
-                    if (cmbList.get(1) != null) {
+                    if (cmbList.get(1) != null && !cmbList.get(1).getValue().equals("")) {
                         break;
                     }
-                } else {
+                } else if (!cmbList.get(0).getValue().equals("")){
                     break;
                 }
             }
